@@ -7,7 +7,6 @@ public class Spawner : MonoBehaviour
 
     //Tile
     public GameObject[] dropTiles;
-    public GameObject spawner;
 
     // Use this for initialization
 
@@ -20,6 +19,7 @@ public class Spawner : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+
     }
 
     void Awake()
@@ -29,18 +29,18 @@ public class Spawner : MonoBehaviour
 
     IEnumerator SpawnDropTiles()
     {
-        yield return new WaitForSeconds(Random.Range(0, 0.7f));
+        yield return new WaitForSeconds(Random.Range(0, 1f));
 
-        // while (true)
-        // {
+        while (true)
+        {
             Vector2 spawnPoint = RandomPointWithinBorders(activeTiles);
-			Debug.Log("Spawning Drops");
             int i = Random.Range(0, 10);
             GameObject drop = (GameObject)Instantiate(dropTiles[i], spawnPoint, Quaternion.identity);
-           // activeTiles.Add(drop);
-       // }
-    }
+            activeTiles.Add(drop);
 
+            yield return new WaitForSeconds(Random.Range(2, 3f));
+       }
+    }
 
     public Vector2 RandomPointWithinBorders(List<GameObject> activeTiles)
     {
@@ -55,13 +55,4 @@ public class Spawner : MonoBehaviour
         }
         return random;
     }
-
-    // public void spawnNext() {
-    // 	int i = Random.Range(0, 10);
-    // 	int spawn = Random.Range(2,8);	
-
-    // 	Instantiate(dropTile,
-    // 				transform.position = new Vector2(spawn, 30),
-    // 				Quaternion.identity);
-    // }
 }

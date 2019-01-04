@@ -6,91 +6,67 @@ public class DropTile : MonoBehaviour
     public float lastFall = 0;
     private int hp = 50;
 
-    public static List<DropTile> tileQueue = new List<DropTile>();
-
     // Use this for initialization
     void Start()
     {
-       // tileQueue.Add(this);
+        // tileQueue.Add(this);
     }
 
     // Update is called once per frame
     void Update()
     {
-        if ((Time.time - lastFall) >= 0.7)
+        if ((Time.time - lastFall) >= 1)
         {
             transform.position += new Vector3(0, -1.5f, 0);
             // See if valid
-            if (isValidGridPos())
+            removeMissedTiles(transform.gameObject);
+
+            if (transform.position.y < GridSystem.bottom)
             {
-                // It's valid. Update GridSystem.
-                updateGridSystem();
+                missDropTile(transform.gameObject);
+            }
 
-				if(GridSystem.validateKillZone(new Vector2(transform.position.x, transform.position.y))){
-					if(Input.GetKeyDown(KeyCode.Space)){
-						hitDropTile();
-					}
-				}
-
-				if (transform.position.x < 0)
+            if (GridSystem.validateKillZone(transform.position.y))
+            {
+                Debug.Log("Valid killzone");
+                if (Input.GetKeyDown("space"))
                 {
-                    missDropTile();
+                    Debug.Log("Killing");
+
+                    hitDropTile(transform.gameObject);
                 }
             }
-            else
-            {
-                // It's not valid. revert.
-    
-                 //FindObjectOfType<Spawner>().spawnNext();
-                // Spawn next Group
-                // Disable script
-                enabled = false;
-            }
+
 
             lastFall = Time.time;
         }
     }
 
-    bool isValidGridPos()
+    public void removeMissedTiles(GameObject tile)
     {
-        foreach (Transform child in transform)
-        {
-            Vector2 v = GridSystem.roundVec2(child.position);
-
+            Vector2 v = GridSystem.roundVec2(tile.transform.position);
             // Not inside Border?
             if (!GridSystem.insideBorder(v))
-                return false;
-        
-        }
-        return true;
+            {
+                missDropTile(tile);
+            }
     }
 
-    void updateGridSystem()
+    public void hitDropTile(GameObject tile)
     {
-        // Remove old children from GridSystem
-        for (int y = 0; y < GridSystem.h; ++y)
-            for (int x = 0; x < GridSystem.w; ++x)
-			if (GridSystem.grid[x, y] != null && GridSystem.grid[x, y].parent == transform){
-                    GridSystem.grid[x, y] = null;
-			}
-        // // Add new children to grid
-        // foreach (Transform child in transform)
-        // {
-        //     Vector2 v = Grid.roundVec2(child.position);
-        //     Grid.grid[(int)v.x, (int)v.y] = child;
-        // }
-    }
-    public void hitDropTile()
-    {
-        GridSystem.grid[(int)transform.position.x, (int)transform.position.y] = null;
-       // tileQueue.Remove(this);
+       // GridSystem.grid[(int)transform.position.x, (int)transform.position.y] = null;
+        Debug.Log("Hit");
+        Spawner.activeTiles.Remove(tile);
+        Destroy(tile);
     }
 
-    public void missDropTile()
+
+    public void missDropTile(GameObject tile)
     {
+        Debug.Log("Missed");
         //change hp
         hp = hp - 1;
-       // tileQueue.Remove(this);
-        GridSystem.grid[(int)transform.position.x, (int) transform.position.y] = null;
+        Spawner.activeTiles.Remove(tile);
+        Destroy(tile);
     }
 }

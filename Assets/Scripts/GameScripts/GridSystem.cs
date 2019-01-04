@@ -15,13 +15,13 @@ public class GridSystem : MonoBehaviour
     public static Transform borderTop;
 
     public static Transform spawnLine;
-    public static int h = 20;
+    public static int h = 30;
     public static int LOWER_BOUNDS = 0;
 
-    public static int left = w-w;
-    public static int right =  w;
-    public static int bottom = h-h;
-    public static int top = h;
+    public static int left = w-(w-2);
+    public static int right =  w-2;
+    public static int bottom = h-(h-2);
+    public static int top = h-2;
 
     public static Transform[,] grid = new Transform[w, h];  // Use this for initialization
     void Start()
@@ -41,14 +41,14 @@ public class GridSystem : MonoBehaviour
 
     public static bool insideBorder(Vector2 pos)
     {
-        return ((int)pos.x >= w - w &&
-                (int)pos.x < w &&
-                (int)pos.y >= h - h &&
-                (int)pos.y >= h);
+        return ((int)pos.x >= left &&
+                (int)pos.x <= right &&
+                (int)pos.y >= bottom &&
+                (int)pos.y <= top);
     }
 
-    public static bool validateKillZone(Vector2 dropTilePos)
+    public static bool validateKillZone(float dropTileYPos)
     {
-        return ((int)dropTilePos.y >= 4 && (int)dropTilePos.y <= 6);
+        return dropTileYPos >= 8f && dropTileYPos <= 20f;
     }
 }
